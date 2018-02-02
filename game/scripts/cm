@@ -1,0 +1,4 @@
+cd ~/projects/eureka/pygom/game
+#python ./ag2.py $1 $2 /data/sean/10s_candle_bindata $3 $4 $5
+# python ./cppmath.py $1888 $2 /data/sean/10s_candle_bindata $3 $4
+python ./cppmath5.py $1888 20171108 /data/sean/10s_candle_bindata $2 $3

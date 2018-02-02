@@ -1,0 +1,2 @@
+cd ~/charts
+python ./draw_price.py $1888 20171108 1 0
