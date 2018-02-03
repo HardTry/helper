@@ -98,7 +98,7 @@ class Artist7:
 
         self.appx = []
         self.m12.get_approx_line(self.appx, self.level)
-        self.lAppx.set_data(self.allx[cp - len(self.appx) : cp], self.appx)
+        self.lAppx.set_data(self.allx[ap_hi_pos - 1 - len(self.appx) : ap_hi_pos - 1], self.appx)
 
         self.predict = []
         self.m12.get_predict_line(self.predict, self.level)
