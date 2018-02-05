@@ -1,49 +1,20 @@
 from libnrlib import *
-import tmath, trade, animation7
+import tmath, trade, animation6
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 import sys, gc, threading, time, random, datetime
 
-
-def read_pos_from_file(inst):
-    s = False
-    str_pos = []
-    filepath = '/home/sean/logs/v2-17/v2_9_logs/' + inst + '-20171108.log'
-    # filepath = '/app/sean/bin/gom/bin/HL-conformal/' + inst + '-7.log'
-    with open(filepath) as f:
-        for line in f:
-            if s:
-                str_pos = line.split(',')
-                del str_pos[-1]
-                s = False
-            if line[0] == '[':
-                s = True
-
-    pos = []
-    for sp in str_pos:
-        pos.append(int(sp))
-
-    return pos
-
-def write_pos_to_file(inst, save_pos):
-    filepath = '/app/sean/bin/gom/bin/logs/save_' + inst + '.log'
-    with open(filepath, 'a+') as f:
-        for sp in save_pos:
-            f.write(str(sp[0]) + ', ')
-
-
 class FigureThread(threading.Thread):
-    def __init__(self, m12, shot, params, save_pos, stop_pos, trade = None):
+    def __init__(self, m12, shot, params, save_pos, trade = None):
         super(FigureThread, self).__init__()
         self.m12 = m12
         self.shot = shot
         self.trade = trade
         self.params = params
         self.save_pos = save_pos
-        self.stop_pos = stop_pos
 
     def run(self):
-        ani_lines1 = animation7.SubplotAnimation7(self.m12, self.shot, self.trade, self.params, 0, self.save_pos, self.stop_pos)
+        ani_lines1 = animation6.SubplotAnimation6(self.m12, self.shot, self.trade, self.params, 0, self.save_pos)
 
         # self.ani_dash = Dashboard(self.dm)
         plt.show()
@@ -129,28 +100,29 @@ if __name__ == "__main__":
     m12.do_math(params.curpos)
 
     save_pos = []
-    inst_code = trade.get_instrument_code(instrument)
-    # stop_pos = read_pos_from_file(inst_code)
-    stop_pos = []
-
-    t_figure = FigureThread(m12, shot, params, save_pos, stop_pos, g_trader)
+    t_figure = FigureThread(m12, shot, params, save_pos, g_trader)
     t_figure.start()
 
     # params.curpos += 1
     params.run_status = 0
     key_level = [4, 5]
+    stop_pos = [
+        2163200, 2163744, 2163840
+    ]
 
     while params.run_status >= 0 and params.curpos <= epos:
         if params.run_status == 1:
             m12.do_math(params.curpos)
-            # if params.curpos in save_pos:
-            #    shot.ClearSnapshot()
-            #    shot.TakeSnapshot(params.curpos, 0, m12)
-            #    # print "take shot", params.curpos
+            if params.curpos in save_pos:
+                shot.ClearSnapshot()
+                shot.TakeSnapshot(params.curpos, level, m12)
+                # print "take shot", params.curpos
 
-            if params.curpos in stop_pos:
-               print params.curpos,
-               s = str(raw_input("Enter to continue:"))
+            # if params.curpos >= stop_pos[-1]:
+            #    break
+
+            # if params.curpos in stop_pos:
+            #    a = str(raw_input(str(params.curpos) + ", enter to continue: "))
 
             params.curpos += params.delta
 
@@ -164,10 +136,3 @@ if __name__ == "__main__":
 
     print 'Press X and Close figure to quit'
     t_figure.join()
-    # write_pos_to_file(inst_code, save_pos)
-
-    # print 'save_pos = ['
-    # for sp in save_pos:
-    #    print sp, ','
-    #print ']'
-

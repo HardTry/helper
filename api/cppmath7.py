@@ -8,8 +8,7 @@ import sys, gc, threading, time, random, datetime
 def read_pos_from_file(inst):
     s = False
     str_pos = []
-    filepath = '/home/sean/logs/v2-17/v2_9_logs/' + inst + '-20171108.log'
-    # filepath = '/app/sean/bin/gom/bin/HL-conformal/' + inst + '-7.log'
+    filepath = './logs/' + inst + '.log'
     with open(filepath) as f:
         for line in f:
             if s:
@@ -26,7 +25,7 @@ def read_pos_from_file(inst):
     return pos
 
 def write_pos_to_file(inst, save_pos):
-    filepath = '/app/sean/bin/gom/bin/logs/save_' + inst + '.log'
+    filepath = './logs/save_' + inst + '.log'
     with open(filepath, 'a+') as f:
         for sp in save_pos:
             f.write(str(sp[0]) + ', ')
@@ -130,8 +129,8 @@ if __name__ == "__main__":
 
     save_pos = []
     inst_code = trade.get_instrument_code(instrument)
-    # stop_pos = read_pos_from_file(inst_code)
-    stop_pos = []
+    stop_pos = read_pos_from_file(inst_code)
+    # stop_pos = [2100752]
 
     t_figure = FigureThread(m12, shot, params, save_pos, stop_pos, g_trader)
     t_figure.start()
@@ -164,10 +163,10 @@ if __name__ == "__main__":
 
     print 'Press X and Close figure to quit'
     t_figure.join()
-    # write_pos_to_file(inst_code, save_pos)
+    write_pos_to_file(inst_code, save_pos)
 
-    # print 'save_pos = ['
-    # for sp in save_pos:
-    #    print sp, ','
-    #print ']'
+    print 'save_pos = ['
+    for sp in save_pos:
+        print sp, ','
+    print ']'
 
