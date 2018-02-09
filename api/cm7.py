@@ -5,32 +5,6 @@ from matplotlib import rcParams
 import sys, gc, threading, time, random, datetime
 
 
-def read_pos_from_file(inst):
-    s = False
-    str_pos = []
-    filepath = './logs/' + inst + '.log'
-    with open(filepath) as f:
-        for line in f:
-            if s:
-                str_pos = line.split(',')
-                del str_pos[-1]
-                s = False
-            if line[0] == '[':
-                s = True
-
-    pos = []
-    for sp in str_pos:
-        pos.append(int(sp))
-
-    return pos
-
-def write_pos_to_file(inst, save_pos):
-    filepath = './logs/save_' + inst + '.log'
-    with open(filepath, 'a+') as f:
-        for sp in save_pos:
-            f.write(str(sp[0]) + ', ')
-
-
 class FigureThread(threading.Thread):
     def __init__(self, m12, shot, params, save_pos, stop_pos, trade = None):
         super(FigureThread, self).__init__()
@@ -129,15 +103,14 @@ if __name__ == "__main__":
 
     save_pos = []
     inst_code = trade.get_instrument_code(instrument)
-    stop_pos = read_pos_from_file(inst_code)
-    # stop_pos = [2100752]
+    # stop_pos = read_pos_from_file(inst_code)
+    stop_pos = [2099201]
 
     t_figure = FigureThread(m12, shot, params, save_pos, stop_pos, g_trader)
     t_figure.start()
 
     # params.curpos += 1
     params.run_status = 0
-    key_level = [4, 5]
 
     while params.run_status >= 0 and params.curpos <= epos:
         if params.run_status == 1:
@@ -163,10 +136,3 @@ if __name__ == "__main__":
 
     print 'Press X and Close figure to quit'
     t_figure.join()
-    write_pos_to_file(inst_code, save_pos)
-
-    print 'save_pos = ['
-    for sp in save_pos:
-        print sp, ','
-    print ']'
-

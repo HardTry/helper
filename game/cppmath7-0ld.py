@@ -8,7 +8,8 @@ import sys, gc, threading, time, random, datetime
 def read_pos_from_file(inst):
     s = False
     str_pos = []
-    filepath = './logs/' + inst + '.log'
+    filepath = '/home/sean/logs/v2-17/v2_9_logs/' + inst + '-20171108.log'
+    # filepath = '/app/sean/bin/gom/bin/HL-conformal/' + inst + '-7.log'
     with open(filepath) as f:
         for line in f:
             if s:
@@ -25,7 +26,7 @@ def read_pos_from_file(inst):
     return pos
 
 def write_pos_to_file(inst, save_pos):
-    filepath = './logs/save_' + inst + '.log'
+    filepath = '/app/sean/bin/gom/bin/logs/save_' + inst + '.log'
     with open(filepath, 'a+') as f:
         for sp in save_pos:
             f.write(str(sp[0]) + ', ')
@@ -129,8 +130,10 @@ if __name__ == "__main__":
 
     save_pos = []
     inst_code = trade.get_instrument_code(instrument)
-    stop_pos = read_pos_from_file(inst_code)
-    # stop_pos = [2100752]
+    # stop_pos = read_pos_from_file(inst_code)
+    stop_pos = [
+        2099400, 2099487, 2099911, 2099954, 2100112, 2100251, 2100430, 2100614, 2100750, 2100792, 2101083, 2101350, 2101677, 2102120, 2102223, 2102374, 2102508, 2102600, 2102851, 2103012, 2103054, 2103274, 2103465, 2103653, 2103732, 2103876, 2104001, 2104196, 2104451, 2104626, 2104700, 2104870, 2105092, 2105256, 2105630, 2105800, 2106552, 2107226, 2107308, 2107817, 2107956, 2108150, 2108659
+    ]
 
     t_figure = FigureThread(m12, shot, params, save_pos, stop_pos, g_trader)
     t_figure.start()
@@ -150,6 +153,7 @@ if __name__ == "__main__":
             if params.curpos in stop_pos:
                print params.curpos,
                s = str(raw_input("Enter to continue:"))
+               stop_pos.remove(params.curpos)
 
             params.curpos += params.delta
 
@@ -163,10 +167,10 @@ if __name__ == "__main__":
 
     print 'Press X and Close figure to quit'
     t_figure.join()
-    write_pos_to_file(inst_code, save_pos)
+    # write_pos_to_file(inst_code, save_pos)
 
-    print 'save_pos = ['
-    for sp in save_pos:
-        print sp, ','
-    print ']'
+    # print 'save_pos = ['
+    # for sp in save_pos:
+    #    print sp, ','
+    #print ']'
 
