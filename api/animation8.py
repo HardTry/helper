@@ -1,15 +1,21 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import time
-import artist7
+import artist8
 from libnrlib import *
 import par
 import math
+import ctypes
 
-class SubplotAnimation7(animation.TimedAnimation):
-    def __init__(self, m12, shot, trade, params, index, save_pos, stop_pos):
+
+libc = ctypes.CDLL(ctypes.util.find_library('c'))
+libc.free.argtypes = (ctypes.c_void_p,)
+
+
+class SubplotAnimation8(animation.TimedAnimation):
+    def __init__(self, m12, shot, trade, params, index, dcplp, stop_pos):
         self.index = index
-        self.fig = plt.figure(index, figsize=(11, 6.1875))
+        self.fig = plt.figure(index, figsize=(16, 9))
         self.ax = [self.fig.add_subplot(3, 4, 1),
                    self.fig.add_subplot(3, 4, 2),
                    self.fig.add_subplot(3, 4, 3),
@@ -31,12 +37,12 @@ class SubplotAnimation7(animation.TimedAnimation):
         self.m12 = m12
         self.shot = shot
         self.trade = trade
-        self.save_pos = save_pos
+        self.dcplp = dcplp
         self.stop_pos = stop_pos
 
         self.art = []
         for i in range(12):
-            self.art.append(artist7.Artist7(m12, shot, self.ax[i], "art" + str(i), i))
+            self.art.append(artist8.Artist8(m12, shot, self.ax[i], "art" + str(i), i))
 
         self.anim_interval = 10
 
@@ -65,7 +71,6 @@ class SubplotAnimation7(animation.TimedAnimation):
                 di = int(math.pow(2, i))
                 spos = int(event.xdata * di)
                 print i, ': (', spos, '~', spos + di, '), ', event.ydata
-                self.save_pos.append((spos, event.ydata, i, di))
 
     def on_resize(self, event):
         # print 'on_resize'
@@ -144,14 +149,13 @@ class SubplotAnimation7(animation.TimedAnimation):
           if self.params.run_status == 1:
             self.params.run_status = 0
             time.sleep(0.5)
-            self.event_source.stop()
-          self.save_pos.append((self.params.curpos, 0, 0, 0))
+          print self.dcplp.output_pshape_skewer()
 
         elif event.key == 'a':
             self.params.run_status = 0
             time.sleep(0.5)
             self.event_source.stop()
-            imgpath = '/app/sean/tmp/tpimage/' + self.params.inst + '-' \
+            imgpath = '/home/sean/tmp/trade/' + self.params.inst + '-' \
                         + self.params.date + '-' + str(self.params.curpos) + '.png'
             plt.savefig(imgpath)
             print 'save to', imgpath
@@ -164,21 +168,10 @@ class SubplotAnimation7(animation.TimedAnimation):
             print tp.up, tp.down, tp.chaos, tp.up_ch, tp.down_ch, tp.ch
         elif event.key == 'e':
             self.m12.show_predict_detail(-1)
-        elif event.key == 'h':
-            self.print_predict_type()
-
-
-    def print_predict_type(self):
-        for l in range(0, 12):
-            print str(l) + ':' + \
-                  str(self.m12.get_best_predict_type(l)) + \
-                  str(self.m12.get_current_predict_type(l)),
-        print
-
+ 
 
     def _draw_frame(self, framedata):
         self.cur_pos = self.params.curpos
-        # print self.cur_pos, len(self.save_pos)
 
         self._drawn_artists = ()
         for i in range(0, 12):

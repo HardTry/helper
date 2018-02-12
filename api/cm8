@@ -1,0 +1,2 @@
+python ./cppmath8.py $1888 20171108 /app/sean/data/10s_candle_bindata $2 $3
+# python ./cm7.py $1888 20180126 /app/sean/data/10s_candle_bindata $2 $3
