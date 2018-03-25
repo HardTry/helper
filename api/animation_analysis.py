@@ -15,7 +15,7 @@ libc.free.argtypes = (ctypes.c_void_p,)
 class SubplotAnimation(animation.TimedAnimation):
     def __init__(self, m12, trade, params, index, dcplp, epos, stop_pos):
         self.index = index
-        self.fig = plt.figure(index, figsize=(16, 9))
+        self.fig = plt.figure(index, figsize=(8, 4.5))
         self.ax = self.fig.add_subplot(1, 1, 1)
         self.fig.tight_layout()
         self.params = params

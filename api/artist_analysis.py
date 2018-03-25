@@ -49,8 +49,8 @@ class Artist:
 
     def update_limite(self, xlim, ylim, cp, show_future):
         self.ax.set_xlim([self.x1[0], self.x2[-1]])
-        self.ax.set_ylim([min(min(self.y1), min(self.y2)), 
-                          max(max(self.y1), max(self.y2))])
+        self.ax.set_ylim([min(ylim[0], min(min(self.y1), min(self.y2)) - 10),
+                          max(ylim[1], max(max(self.y1), max(self.y2)) + 10)])
 
 
     def update_lines(self, cp, show_future):
