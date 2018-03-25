@@ -57,7 +57,7 @@ if __name__ == "__main__":
     gc.enable()
 
     instrument = get_random_instrument()
-    thedate = '20180126'
+    thedate = '20171108'
     datapath = '/app/sean/data/10s_candle_bindata'
     trade_name = ''
 

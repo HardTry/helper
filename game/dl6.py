@@ -8,8 +8,9 @@ def read_pos_from_file(inst):
     s = False
     str_pos = []
     # filepath = '/app/sean/bin/gom/bin/logs/' + inst + '.log'
+    filepath = '/app/sean/bin/gom/bin/v5-1-4-logs/' + inst + '.log'
     # filepath = '/home/sean/logs/v2-17/v2_7_logs/' + inst + '-20171108.log'
-    filepath = '/home/sean/logs/reverse/' + inst + '.log'
+    # filepath = '/home/sean/logs/reverse/' + inst + '.log'
     with open(filepath) as f:
         for line in f:
             if s:
@@ -101,16 +102,8 @@ if __name__ == "__main__":
 
     for pos in range(spos, epos):
         m12.do_math(pos)
-        changed = m12.inflexion_changed(level)
-        if changed != 0:
-           if 4 == m12.get_resonance_level(pos, level):
-               shot.ClearSnapshot()
-               shot.TakeSnapshot(pos, level, m12)
 
         if pos in save_pos:
-            #shot.ClearSnapshot()
-            #shot.TakeSnapshot(pos, level, m12)
-
             draw.draw_frame(pos)
             draw.save_frame()
 

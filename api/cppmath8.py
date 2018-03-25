@@ -9,7 +9,9 @@ def read_pos_from_file(inst):
     s = False
     str_pos = []
     # filepath = './logs/' + inst + '.log'
-    filepath = '/app/sean/bin/gom/bin/v3_logs/' + inst + '.log'
+    filepath = '/app/sean/bin/gom/bin/v5-3-4-logs/' + inst + '.log'
+    # filepath = '/app/sean/bin/gom/bin/v3-3-logs/' + inst + '.log'
+
     with open(filepath) as f:
         for line in f:
             if s:
@@ -103,9 +105,6 @@ if __name__ == "__main__":
         else:
             epos = all_len - 1
 
-    print 'all data', all_len, 'start from', spos, 'to ', epos
-    params.curpos = spos
-
     g_trader = None
 
 
@@ -122,20 +121,25 @@ if __name__ == "__main__":
     for key, value in sorted(rc_params.iteritems()):
         rcParams[key] = value
 
-    m12.do_math(params.curpos)
-
     inst_code = trade.get_instrument_code(instrument)
     stop_pos = read_pos_from_file(inst_code)
     # stop_pos = [
     # ]
 
+    # spos = stop_pos[random.randint(0, len(stop_pos)- 10) + 5 - 1] - 1
+    print 'all data', all_len, 'start from', spos, 'to ', epos
+    params.curpos = spos
+
+    m12.do_math(params.curpos)
+
     dcplp = Dcplp()
+    dcplp.set_register(params.curpos, m12)
+
     t_figure = FigureThread(m12, shot, params, dcplp, stop_pos, g_trader)
     t_figure.start()
 
     # params.curpos += 1
     params.run_status = 0
-    key_level = [4, 5]
 
     while params.run_status >= 0 and params.curpos <= epos:
         if params.run_status == 1:
@@ -145,6 +149,15 @@ if __name__ == "__main__":
             if params.curpos in stop_pos:
                print params.curpos,
                s = str(raw_input("Enter to continue:"))
+
+            x1 = []
+            y1 = []
+            x2 = []
+            y2 = []
+            get_analysis_price(m12, params.curpos, epos, y1, y2, x1, x2)
+            x3 = []
+            y3 = []
+            get_analysis_data(dcplp, x3, y3)
 
             params.curpos += params.delta
 

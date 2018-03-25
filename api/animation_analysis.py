@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import time
-import artist8
+import artist_analysis
 from libnrlib import *
 import par
 import math
@@ -12,37 +12,22 @@ libc = ctypes.CDLL(ctypes.util.find_library('c'))
 libc.free.argtypes = (ctypes.c_void_p,)
 
 
-class SubplotAnimation8(animation.TimedAnimation):
-    def __init__(self, m12, shot, trade, params, index, dcplp, stop_pos):
+class SubplotAnimation(animation.TimedAnimation):
+    def __init__(self, m12, trade, params, index, dcplp, epos, stop_pos):
         self.index = index
         self.fig = plt.figure(index, figsize=(16, 9))
-        self.ax = [self.fig.add_subplot(3, 4, 1),
-                   self.fig.add_subplot(3, 4, 2),
-                   self.fig.add_subplot(3, 4, 3),
-                   self.fig.add_subplot(3, 4, 4),
-                   self.fig.add_subplot(3, 4, 5),
-                   self.fig.add_subplot(3, 4, 6),
-                   self.fig.add_subplot(3, 4, 7),
-                   self.fig.add_subplot(3, 4, 8),
-                   self.fig.add_subplot(3, 4, 9),
-                   self.fig.add_subplot(3, 4, 10),
-                   self.fig.add_subplot(3, 4, 11),
-                   self.fig.add_subplot(3, 4, 12)]
-
-        self.region = [par.Rect() for _  in range(12)]
+        self.ax = self.fig.add_subplot(1, 1, 1)
         self.fig.tight_layout()
         self.params = params
+        self.epos = epos
         self.fig.canvas.set_window_title(params.inst)
 
         self.m12 = m12
-        self.shot = shot
         self.trade = trade
         self.dcplp = dcplp
         self.stop_pos = stop_pos
 
-        self.art = []
-        for i in range(12):
-            self.art.append(artist8.Artist8(m12, shot, self.ax[i], "art" + str(i), i))
+        self.art = artist_analysis.Artist(m12, dcplp, self.ax, "art")
 
         self.anim_interval = 10
 
@@ -52,8 +37,6 @@ class SubplotAnimation8(animation.TimedAnimation):
         if self.index == 0:
             self.fig.canvas.mpl_connect('key_press_event', self.press)
             self.fig.canvas.mpl_connect('close_event', self.handle_close)
-            self.fig.canvas.mpl_connect('resize_event', self.on_resize)
-            self.fig.canvas.mpl_connect('button_press_event', self.onclick)
 
         # self.fig.canvas.mpl_connect('button_press_event', self.onClick)
         self.event_source = self.fig.canvas.new_timer()
@@ -62,67 +45,9 @@ class SubplotAnimation8(animation.TimedAnimation):
         animation.TimedAnimation.__init__(self, self.fig, interval=self.anim_interval,
                                           event_source=self.event_source, blit=True)
 
-    def onclick(self, event):
-        # print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
-        #      ('double' if event.dblclick else 'single', event.button,
-        #       event.x, event.y, event.xdata, event.ydata))
-        for i in range(12):
-            if self.region[i].in_rect(event.x, event.y):
-                di = int(math.pow(2, i))
-                spos = int(event.xdata * di)
-                print i, ': (', spos, '~', spos + di, '), ', event.ydata
-
-    def on_resize(self, event):
-        # print 'on_resize'
-        for i in range(12):
-          bbox = self.ax[i].get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
-          d = self.fig.dpi
-          self.region[i].set_rect(bbox.x0 * d, bbox.y0 * d, bbox.x1 * d, bbox.y1 * d)
-          # print i, ':', bbox.x0 * d, bbox.y0 * d, bbox.x1 * d, bbox.y1 * d
-        self.event_source.stop()
 
     def handle_close(self, event):
         self.event_source.stop()
-
-    def jump(self, pos):
-        self.params.run_status = 0
-        time.sleep(0.25)
-        if pos > 10 or pos < 0:
-            for art in self.art:
-                art.clean_predict_lines()
-
-            self.m12.ph_clear()
-            self.m12.do_math(self.params.curpos)
-
-        self.params.curpos += pos
-
-
-    def next_stop(self, delta):
-        self.params.run_status = 0
-        time.sleep(0.25)
-
-        if (self.params.curpos < self.stop_pos[0]):
-            self.params.curpos = self.stop_pos[0] - 2
-            self.params.run_status = 1
-            return
-
-        for i in range(0, len(self.stop_pos) - 1):
-          if self.params.curpos >= self.stop_pos[i] \
-             and \
-             self.params.curpos < self.stop_pos[i+1]:
-             if delta < 0:
-                 self.params.curpos = self.stop_pos[i] - 2
-                 # print 'jump to ', self.params.curpos
-                 self.params.run_status = 1
-             elif delta > 0:
-                 self.params.curpos = self.stop_pos[i+1] - 2
-                 # print 'jump to ', self.params.curpos
-                 self.params.run_status = 1
-             return
-
-        self.params.curpos = self.stop_pos[-1] - 2
-        self.params.run_status = 1
-
 
     def press(self, event):
         # print event.key
@@ -182,7 +107,7 @@ class SubplotAnimation8(animation.TimedAnimation):
 
         self._drawn_artists = ()
         for i in range(0, 12):
-            self._drawn_artists += self.art[i].animate(self.cur_pos, self.show_future)
+            self._drawn_artists += self.art.animate(self.cur_pos, self.epos, self.show_future)
 
 
 
@@ -191,4 +116,4 @@ class SubplotAnimation8(animation.TimedAnimation):
 
     def _init_draw(self):
         for i in range(0, 12):
-            self.art[i].init_animation()
+            self.art.init_animation()

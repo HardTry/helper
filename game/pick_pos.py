@@ -5,12 +5,47 @@ from matplotlib import rcParams
 import sys, gc, threading, time, random, datetime
 import random
 
+savepath = '/app/sean/tmp/tpimages'
+logpath = '/app/sean/bin/gom/bin/v3-3-logs'
+
+
+def gen_row_of_table(inst, direction, poss):
+    filepath = savepath + '/' + 'table.txt'
+    with open(filepath, 'a+') as fp:
+        content = '   & ' + inst + ' & ' + str(direction) + ' & ' + \
+                   str(poss[0]) + ' & ' + str(poss[1]) + ' &   &  \\\\\n \\hline\n'
+        fp.write(content)
+
+
+def get_dir(ptype):
+    if (ptype == 5 or ptype == 7):
+        return -1
+    if (ptype == 4 or ptype == 6):
+        return 1
+
+
+def gen_section(inst, poss):
+    filepath = savepath + '/' + 'detail.txt'
+    with open(filepath, 'a+') as fp:
+        content = '\n\\clearpage\n\\subsection{' + inst + ' ' + str(poss[0]) + ' ' + str(poss[1]) +'}\n'
+        fp.write(content)
+
+
+def gen_detail(pos, inst, skewer):
+    filepath = filepath = savepath + '/' + 'detail.txt'
+    with open(filepath, 'a+') as fp:
+        content = '\\par\\noindent\n' + \
+                  str(pos) + ': ' + skewer + '\n' + '\\par\\noindent\n' + \
+                  '\\includegraphics[scale=0.415]{images/' + \
+                  inst + '-20171108-' + str(pos) + '.png}\n'
+        fp.write(content)
+
 
 def read_pos_from_file(inst):
     s = False
     str_pos = []
     # filepath = './logs/' + inst + '.log'
-    filepath = '/app/sean/bin/gom/bin/v3_logs/' + inst + '.log'
+    filepath = logpath + '/' + inst + '.log'
     with open(filepath) as f:
         for line in f:
             if s:
@@ -98,7 +133,7 @@ if __name__ == "__main__":
     params.inst = instrument
     params.date = thedate
     params.data_len = 1024
-    params.imgpath = '/app/sean/tmp'
+    params.imgpath = savepath
 
     m12 = Math12()
     if instrument == 'rb888':
@@ -138,11 +173,23 @@ if __name__ == "__main__":
 
     draw = draw_framework8.DrawFramework8(m12, shot, g_trader, params, 0)
     pos = spos
+    dcplp = Dcplp()
+
+    gen_section(inst_code, stop_pos)
+
     while pos <= epos:
         m12.do_math(pos)
+        dcplp.set_register(pos, m12)
         draw.draw_frame(pos)
+
+        if pos == stop_pos[0]:
+            direction = get_dir(m12.get_current_predict_type(0))
+            gen_row_of_table(inst_code, direction, stop_pos)
+
         if pos in stop_pos:
-            print pos, 'save'
             draw.save_frame()
+            gen_detail(pos, instrument, dcplp.skewer_to_string())
+        
         pos += 1
+    
     print 'Done.'
