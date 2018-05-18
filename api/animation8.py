@@ -150,6 +150,7 @@ class SubplotAnimation8(animation.TimedAnimation):
             self.params.run_status = 0
             time.sleep(0.5)
           print self.dcplp.skewer_to_string()
+          self.m12.print_channel_line_attr()
         elif event.key == 'z':
           if self.params.run_status == 1:
             self.params.run_status = 0

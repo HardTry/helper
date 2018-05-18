@@ -42,10 +42,11 @@ class Artist8:
         self.lCurrent, = self.ax.plot([], [], lw=1, color='blue')
         self.lFuture, = self.ax.plot([], [], lw=1, color='yellow')
         self.lp_hi, = self.ax.plot([], [], lw=1, color='red')
+        self.appx, = self.ax.plot([], [], lw=1, color='black')
         self.lNow, = self.ax.plot([], [], lw=1, color='green')
         self.lBest_pl, = self.ax.plot([], [], lw=1, color=change_pnt_color)
 
-        self.lines = [self.lmax, self.lmin, self.lCurrent, self.lFuture, self.lNow, self.lp_hi, self.lBest_pl]
+        self.lines = [self.lmax, self.lmin, self.lCurrent, self.lFuture, self.lNow, self.lp_hi, self.appx, self.lBest_pl]
 
 
     def init_animation(self):
@@ -97,6 +98,10 @@ class Artist8:
         self.m12.get_predict_line(self.predict, self.level)
         self.lp_hi.set_data(self.allx[ap_hi_pos: ap_hi_pos + m_predict_len], \
                             self.predict)
+
+        x = []
+        self.m12.get_approximate(x, cp, self.level)
+        self.appx.set_data(self.allx[cp - len(x) : cp], x);
 
         bpl = []
         pl = PredictLine()
