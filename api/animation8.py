@@ -79,10 +79,12 @@ class SubplotAnimation8(animation.TimedAnimation):
           d = self.fig.dpi
           self.region[i].set_rect(bbox.x0 * d, bbox.y0 * d, bbox.x1 * d, bbox.y1 * d)
           # print i, ':', bbox.x0 * d, bbox.y0 * d, bbox.x1 * d, bbox.y1 * d
-        self.event_source.stop()
+        if self.event_source is not None:
+            self.event_source.stop()
 
     def handle_close(self, event):
-        self.event_source.stop()
+        if self.event_source is not None:
+            self.event_source.stop()
 
     def jump(self, pos):
         self.params.run_status = 0
