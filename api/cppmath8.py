@@ -9,7 +9,8 @@ def read_pos_from_file(inst):
     s = False
     str_pos = []
     # filepath = './logs/' + inst + '.log'
-    filepath = '/app/sean/bin/gom/bin/v6-logs/v6-4-6-logs/' + inst + '.log'
+    filepath = '/app/sean/bin/gom/bin/v5-logs/v5-4-1-2-logs/' + inst + '.log'
+    # filepath = '/app/sean/bin/gom/bin/v6-logs/v6-5-1-logs/' + inst + '.log'
     # filepath = '/app/sean/bin/gom/bin/v3-3-logs/' + inst + '.log'
 
     with open(filepath) as f:

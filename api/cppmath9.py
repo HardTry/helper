@@ -31,16 +31,15 @@ def read_pos_from_file(inst):
     return pos
 
 class FigureThread(threading.Thread):
-    def __init__(self, m12, params, dcplp, stop_pos, trade = None):
+    def __init__(self, m12, params, dcplp, stop_pos):
         super(FigureThread, self).__init__()
         self.m12 = m12
-        self.trade = trade
         self.params = params
         self.dcplp = dcplp
         self.stop_pos = stop_pos
 
     def run(self):
-        ani_lines1 = animation9.SubplotAnimation9(self.m12, self.trade, self.params, 0, self.dcplp, self.stop_pos)
+        ani_lines1 = animation9.SubplotAnimation9(self.m12, self.params, 0, self.dcplp, self.stop_pos)
 
         # self.ani_dash = Dashboard(self.dm)
         plt.show()
@@ -58,7 +57,6 @@ if __name__ == "__main__":
     instrument = sys.argv[1].encode('ascii')
     thedate = sys.argv[2].encode('ascii')
     datapath = sys.argv[3].encode('ascii') + '/' + instrument
-    trade_name = ''
 
     params = tmath.Params()
     ppps = NRParams()
@@ -103,8 +101,6 @@ if __name__ == "__main__":
         else:
             epos = all_len - 1
 
-    g_trader = None
-
 
     # opq = str(raw_input("enter something to draw: (q = quit)"))
     # if (opq == 'q'):
@@ -132,7 +128,7 @@ if __name__ == "__main__":
     dcplp = Dcplp()
     dcplp.set_register(params.curpos, m12)
 
-    t_figure = FigureThread(m12, params, dcplp, stop_pos, g_trader)
+    t_figure = FigureThread(m12, params, dcplp, stop_pos)
     t_figure.start()
 
     # params.curpos += 1

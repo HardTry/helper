@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import tmath
 from libnrlib import *
 
 m_data_len = 1024

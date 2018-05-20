@@ -13,7 +13,7 @@ libc.free.argtypes = (ctypes.c_void_p,)
 
 
 class SubplotAnimation9(animation.TimedAnimation):
-    def __init__(self, m12, trade, params, index, dcplp, stop_pos):
+    def __init__(self, m12, params, index, dcplp, stop_pos):
         self.index = index
         self.fig = plt.figure(index, figsize=(16, 9))
         self.ax = [self.fig.add_subplot(3, 4, 1),
@@ -35,7 +35,6 @@ class SubplotAnimation9(animation.TimedAnimation):
         self.fig.canvas.set_window_title(params.inst)
 
         self.m12 = m12
-        self.trade = trade
         self.dcplp = dcplp
         self.stop_pos = stop_pos
 
@@ -46,7 +45,7 @@ class SubplotAnimation9(animation.TimedAnimation):
         self.anim_interval = 10
 
         self.cur_pos = self.params.data_len
-        self.show_future = True
+        self.show_future = False   # True
 
         if self.index == 0:
             self.fig.canvas.mpl_connect('key_press_event', self.press)

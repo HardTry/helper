@@ -47,7 +47,7 @@ class SubplotAnimation8(animation.TimedAnimation):
         self.anim_interval = 10
 
         self.cur_pos = self.params.data_len
-        self.show_future = True
+        self.show_future = False   # True
 
         if self.index == 0:
             self.fig.canvas.mpl_connect('key_press_event', self.press)
