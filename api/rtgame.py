@@ -1,4 +1,4 @@
-import tmath, trade, animation8
+import tmath, trade, animation9
 from libnrlib import *
 from ctypes import *
 import ctpif
@@ -8,12 +8,11 @@ import numpy as np
 import sys, gc, threading, time, random, datetime
 from datetime import datetime
 
-
-
 # load dll
 ctpif_cdll = cdll.LoadLibrary("libctpif.so")
 
 global watch_inst, gdm, params, gca, garray, ani_lines
+
 
 # the Candle Bar
 class CandleBar(Structure):
@@ -24,6 +23,7 @@ class CandleBar(Structure):
                 ("close", c_double),
                 ("vol", c_double),
                 ("interest", c_double)]
+
     def to_string(self, its_new):
         print its_new, self.key, self.open, self.high, self.low, self.close, self.vol, self.interest
 
@@ -49,8 +49,6 @@ def got_new_data_fun(inst, curpos, count, last_pos, last_total, its_new):
     #    curpos, count, its_new, bar[0], bar[1], bar[2], bar[3], bar[4], bar[5], bar[6])
 
 
-
-
 class FigureThread(threading.Thread):
     def __init__(self, dm, params, save_pos, trade=None):
         super(FigureThread, self).__init__()
@@ -61,10 +59,11 @@ class FigureThread(threading.Thread):
 
     def run(self):
         global ani_lines
-        ani_lines = animation8.SubplotAnimation(self.dm, self.trade, self.params, 0, self.save_pos)
+        ani_lines = animation9.SubplotAnimation9(self.dm, self.params, 0, self.save_pos)
 
         # self.ani_dash = Dashboard(self.dm)
         plt.show()
+
 
 if __name__ == "__main__":
     global watch_inst, gdm, params, ani_lines
