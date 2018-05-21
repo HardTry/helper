@@ -146,6 +146,7 @@ if __name__ == "__main__":
     #
     t_figure = FigureThread(m12, params, dcplp)
     t_figure.start()
+    time.sleep(30)   # wait the figure
 
     while params.run_status > 0 and reader_good:
         ret = ctpif.cc_new_data(long(reader), watch_inst, da)
