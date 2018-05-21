@@ -164,11 +164,11 @@ if __name__ == "__main__":
             candle = CandleBar(bar[0], bar[1], bar[2], bar[3], bar[4], bar[5], bar[6])
             m12.append(candle)
 
+            m12.do_math(params.curpos + 1)
             params.curpos += 1
-            m12.do_math(params.curpos)
 
+            m12.do_math(params.curpos + 1)
             params.curpos += 1
-            m12.do_math(params.curpos)
 
         time.sleep(0.01)
 

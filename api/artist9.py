@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 from libnrlib import *
 
 m_data_len = 1024
@@ -15,6 +14,12 @@ class Artist9:
         self.top_pos = 0
 
         self.price = []
+        self.max_x = []
+        self.max_y = []
+        self.min_x = []
+        self.min_y = []
+        self.predict = []
+
         m12.get_hop_price(self.price, level)
         self.allx = list(range(0, len(self.price) + m_predict_len))
 
@@ -44,14 +49,13 @@ class Artist9:
         self.lNow, = self.ax.plot([], [], lw=1, color='green')
         self.lBest_pl, = self.ax.plot([], [], lw=1, color=change_pnt_color)
 
-        self.lines = [self.lmax, self.lmin, self.lCurrent, self.lFuture, self.lNow, self.lp_hi, self.appx, self.lBest_pl]
-
+        self.lines = [self.lmax, self.lmin, self.lCurrent, self.lFuture, self.lNow, self.lp_hi, self.appx,
+                      self.lBest_pl]
 
     def init_animation(self):
         for line in self.lines:
             line.set_data([], [])
         return self.lines
-
 
     def update_limite(self, xlim, ylim, cp, show_future):
         xlim[0] = cp - m_data_len
@@ -64,7 +68,6 @@ class Artist9:
         else:
             self.ax.set_ylim([min(self.price[int(xlim[0]): cp]),
                               max(self.price[int(xlim[0]): cp])])
-
 
     def update_lines(self, cp, show_future):
         self.max_x = []
@@ -99,7 +102,7 @@ class Artist9:
 
         x = []
         self.m12.get_approximate(x, cp, self.level)
-        self.appx.set_data(self.allx[cp - len(x) : cp], x);
+        self.appx.set_data(self.allx[cp - len(x): cp], x);
 
         bpl = []
         pl = PredictLine()
@@ -110,14 +113,11 @@ class Artist9:
         else:
             self.lBest_pl.set_data([], [])
 
-
     def update_extreme_lo(self, cp):
         pass
 
-
     def update_extreme_appx(self, cp):
         pass
-
 
     def animate(self, cur_pos, show_future):
         cp = cur_pos / self.down_int - 1
@@ -126,7 +126,6 @@ class Artist9:
         self.update_limite(xlim, ylim, cp, show_future)
         self.update_lines(cp, show_future)
         return tuple(self.lines)
-
 
     def update(self, cur_pos, show_future=True):
         cp = cur_pos / self.down_int - 1
@@ -139,8 +138,6 @@ class Artist9:
 
         self.update_lines(cp, show_future)
 
-
     def clean_predict_lines(self):
         for ppll in self.pls:
             ppll.set_data([], [])
-
