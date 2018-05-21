@@ -1,12 +1,13 @@
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import time
-import artist9
-from libnrlib import *
-import par
-import math
 import ctypes
+import math
+import time
+from libnrlib import *
 
+import matplotlib.animation as animation
+import matplotlib.pyplot as plt
+
+import artist9
+import par
 
 libc = ctypes.CDLL(ctypes.util.find_library('c'))
 libc.free.argtypes = (ctypes.c_void_p,)
@@ -29,7 +30,7 @@ class SubplotAnimation9(animation.TimedAnimation):
                    self.fig.add_subplot(3, 4, 11),
                    self.fig.add_subplot(3, 4, 12)]
 
-        self.region = [par.Rect() for _  in range(12)]
+        self.region = [par.Rect() for _ in range(12)]
         self.fig.tight_layout()
         self.params = params
         self.fig.canvas.set_window_title(params.inst)
@@ -45,7 +46,7 @@ class SubplotAnimation9(animation.TimedAnimation):
         self.anim_interval = 10
 
         self.cur_pos = self.params.data_len
-        self.show_future = False   # True
+        self.show_future = False  # True
 
         if self.index == 0:
             self.fig.canvas.mpl_connect('key_press_event', self.press)
@@ -73,10 +74,10 @@ class SubplotAnimation9(animation.TimedAnimation):
     def on_resize(self, event):
         # print 'on_resize'
         for i in range(12):
-          bbox = self.ax[i].get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
-          d = self.fig.dpi
-          self.region[i].set_rect(bbox.x0 * d, bbox.y0 * d, bbox.x1 * d, bbox.y1 * d)
-          # print i, ':', bbox.x0 * d, bbox.y0 * d, bbox.x1 * d, bbox.y1 * d
+            bbox = self.ax[i].get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
+            d = self.fig.dpi
+            self.region[i].set_rect(bbox.x0 * d, bbox.y0 * d, bbox.x1 * d, bbox.y1 * d)
+            # print i, ':', bbox.x0 * d, bbox.y0 * d, bbox.x1 * d, bbox.y1 * d
         if self.event_source is not None:
             self.event_source.stop()
 
@@ -96,33 +97,32 @@ class SubplotAnimation9(animation.TimedAnimation):
 
         self.params.curpos += pos
 
-
     def next_stop(self, delta):
+        if self.stop_pos is None:
+            return
+
         self.params.run_status = 0
         time.sleep(0.25)
 
-        if (self.params.curpos < self.stop_pos[0]):
+        if self.params.curpos < self.stop_pos[0]:
             self.params.curpos = self.stop_pos[0] - 2
             self.params.run_status = 1
             return
 
         for i in range(0, len(self.stop_pos) - 1):
-          if self.params.curpos >= self.stop_pos[i] \
-             and \
-             self.params.curpos < self.stop_pos[i+1]:
-             if delta < 0:
-                 self.params.curpos = self.stop_pos[i] - 2
-                 # print 'jump to ', self.params.curpos
-                 self.params.run_status = 1
-             elif delta > 0:
-                 self.params.curpos = self.stop_pos[i+1] - 2
-                 # print 'jump to ', self.params.curpos
-                 self.params.run_status = 1
-             return
+            if self.stop_pos[i] <= self.params.curpos < self.stop_pos[i + 1]:
+                if delta < 0:
+                    self.params.curpos = self.stop_pos[i] - 2
+                    # print 'jump to ', self.params.curpos
+                    self.params.run_status = 1
+                elif delta > 0:
+                    self.params.curpos = self.stop_pos[i + 1] - 2
+                    # print 'jump to ', self.params.curpos
+                    self.params.run_status = 1
+                return
 
         self.params.curpos = self.stop_pos[-1] - 2
         self.params.run_status = 1
-
 
     def press(self, event):
         # print event.key
@@ -132,7 +132,7 @@ class SubplotAnimation9(animation.TimedAnimation):
             self.event_source.stop()
             self.params.run_status = -1
         elif event.key == 'r':
-            if (self.params.run_status == 1):
+            if self.params.run_status == 1:
                 self.params.run_status = 0
                 self.event_source.stop()
             elif self.params.run_status == 0:
@@ -146,25 +146,22 @@ class SubplotAnimation9(animation.TimedAnimation):
         elif event.key == 'o':
             print 'curpos', self.params.curpos
         elif event.key == 'd':
-          if self.params.run_status == 1:
-            self.params.run_status = 0
-            time.sleep(0.5)
-          print self.dcplp.skewer_to_string()
-          self.m12.print_channel_line_attr()
+            if self.params.run_status == 1:
+                self.params.run_status = 0
+                time.sleep(0.5)
+            print self.dcplp.skewer_to_string()
+            self.m12.print_channel_line_attr()
         elif event.key == 'z':
-          if self.params.run_status == 1:
-            self.params.run_status = 0
-            time.sleep(0.5)
-          print self.dcplp.sequence_to_string()
-
-
-
+            if self.params.run_status == 1:
+                self.params.run_status = 0
+                time.sleep(0.5)
+            print self.dcplp.sequence_to_string()
         elif event.key == 'a':
             self.params.run_status = 0
             time.sleep(0.5)
             self.event_source.stop()
             imgpath = '/home/sean/tmp/trade/' + self.params.inst + '-' \
-                        + self.params.date + '-' + str(self.params.curpos) + '.png'
+                      + self.params.date + '-' + str(self.params.curpos) + '.png'
             plt.savefig(imgpath)
             print 'save to', imgpath
         elif event.key == 'p':
@@ -176,7 +173,6 @@ class SubplotAnimation9(animation.TimedAnimation):
             print tp.up, tp.down, tp.chaos, tp.up_ch, tp.down_ch, tp.ch
         elif event.key == 'e':
             self.m12.show_predict_detail(-1)
- 
 
     def _draw_frame(self, framedata):
         self.cur_pos = self.params.curpos
@@ -184,8 +180,6 @@ class SubplotAnimation9(animation.TimedAnimation):
         self._drawn_artists = ()
         for i in range(0, 12):
             self._drawn_artists += self.art[i].animate(self.cur_pos, self.show_future)
-
-
 
     def new_frame_seq(self):
         return iter(range(self.params.all_len))

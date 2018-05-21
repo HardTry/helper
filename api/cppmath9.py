@@ -30,6 +30,7 @@ def read_pos_from_file(inst):
     print 'got', len(pos), 'points'
     return pos
 
+
 class FigureThread(threading.Thread):
     def __init__(self, m12, params, dcplp, stop_pos):
         super(FigureThread, self).__init__()
@@ -45,12 +46,11 @@ class FigureThread(threading.Thread):
         plt.show()
 
 
-
 if __name__ == "__main__":
     gc.disable()
     gc.enable()
 
-    if (len(sys.argv) < 4 or len(sys.argv) > 6):
+    if len(sys.argv) < 4 or len(sys.argv) > 6:
         print 'Usage: python cppmath.py <instrument> <r|the end day> <data file path> [start pos] [end pos]\n'
         exit(0)
 
@@ -69,12 +69,11 @@ if __name__ == "__main__":
 
     m12 = Math12()
     if instrument == 'rb888':
-    #     # ppps.min_data_size = int(1024 * 2048 * 1.0000005)
+        #     # ppps.min_data_size = int(1024 * 2048 * 1.0000005)
         ppps.min_data_size = int(1024 * 2048 * 3)
     else:
         ppps.min_data_size = int(1024 * 2048 * 1.5)
     # ppps.min_data_size = int(1024 * 2048 *1.005)
-
 
     m12.set_param(ppps)
     all_len = m12.get_data_from_file(instrument, datapath, thedate, trade.get_hop(instrument))
@@ -84,10 +83,10 @@ if __name__ == "__main__":
     epos = 0
     spos = 0
 
-    if (len(sys.argv) == 4):
+    if len(sys.argv) == 4:
         epos = all_len - 1
         spos = params.minlen + 2048
-    elif (len(sys.argv) > 4):
+    elif len(sys.argv) > 4:
         if sys.argv[4] == 'r':
             random.seed(datetime.datetime.now())
             spos = int(random.random() * (all_len - params.minlen) + params.minlen)
@@ -96,11 +95,10 @@ if __name__ == "__main__":
             if spos < params.minlen + 2048:
                 spos = params.minlen + 2048
 
-        if (len(sys.argv) == 6):
+        if len(sys.argv) == 6:
             epos = int(sys.argv[5])
         else:
             epos = all_len - 1
-
 
     # opq = str(raw_input("enter something to draw: (q = quit)"))
     # if (opq == 'q'):
@@ -140,8 +138,8 @@ if __name__ == "__main__":
             dcplp.set_register(params.curpos, m12)
 
             if params.curpos in stop_pos:
-               print params.curpos,
-               s = str(raw_input("Enter to continue:"))
+                print params.curpos,
+                s = str(raw_input("Enter to continue:"))
 
             params.curpos += params.delta
 

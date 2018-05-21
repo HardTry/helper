@@ -1,7 +1,7 @@
 import tmath, trade, animation9
 from libnrlib import *
 from ctypes import *
-import ctpif
+import ctpmdif
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 import numpy as np
@@ -11,7 +11,7 @@ from datetime import datetime
 # load dll
 ctpif_cdll = cdll.LoadLibrary("libctpif.so")
 
-global watch_inst, gdm, params, gca, garray, ani_lines
+global watch_inst, gdm, params, gca, g_array, ani_lines
 
 
 # the Candle Bar
@@ -29,7 +29,7 @@ class CandleBar(Structure):
 
 
 def got_new_data_fun(inst, curpos, count, last_pos, last_total, its_new):
-    global watch_inst, gdm, params, gca, garray
+    global watch_inst, gdm, params, gca, g_array
     if inst != watch_inst:
         return
     # print inst, curpos, count, last_pos, last_total, its_new
@@ -194,7 +194,7 @@ if __name__ == "__main__":
 
     # convert to numpy matrix
     # naptr = cast(bufptr, )
-    garray = np.ctypeslib.as_array(bufptr, shape=(datalen, 7))
+    g_array = np.ctypeslib.as_array(bufptr, shape=(datalen, 7))
 
     # convert to dataframe
     # df = pd.DataFrame(na)
@@ -207,16 +207,16 @@ if __name__ == "__main__":
 
     # ctpif.cc_got_new_data(long(reader), got_new_data_fun, '', 0L, 0L, 0L, 0L, 0)
     reader_good = True
-    da = ctpif.DataAmount()
+    da = ctpmdif.DataAmount()
     while params.run_status > 0 and reader_good:
-        ret = ctpif.cc_new_data(long(reader), watch_inst, da)
+        ret = ctpmdif.cc_new_data(long(reader), watch_inst, da)
         if ret < 0:
             reader_good = False
             params.run_status = 0
             break
 
         if da.has_new == 1:
-            bar = garray[da.curpos]
+            bar = g_array[da.curpos]
             # print '%d, %d | %d > %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f' % (
             #   da.curpos, da.count, da.isnew, bar[0], bar[1], bar[2], bar[3], bar[4], bar[5], bar[6])
 
