@@ -35,80 +35,63 @@ def open_download_dialog():
     ag.moveTo(68, 312)
     ag.click()
         
-    ag.moveTo(345, 135)
-    ag.click()
+    ag.click(388, 188)
     
-    #select period to 1d
-    ag.moveTo(632, 169)
-    ag.click()
-    ag.moveTo(632, 255)
-    ag.click()
+    #select period to 10s
+    ag.click(666, 214)
+    ag.click(666, 242)
     
     #click download button
-    ag.moveTo(794, 162)
-    ag.click()
+    ag.click(820, 214)
     
     time.sleep(2)
 
 #st and et are date type
 def input_download_param(st, et, period):
-	#enter start year
-	ag.moveTo(575, 295)
-	ag.click()
-	enter_string(str(st.year))
-	#enter start month
-	ag.moveTo(605, 295)
-	ag.click()
-	enter_string(str(st.month))
-	#enter start day
-	ag.moveTo(629, 295)
-	ag.click()
-	enter_string(str(st.day))
+    #enter start year
+    ag.click(610, 345)
+    enter_string(str(st.year))
+    #enter start month
+    ag.click(642, 345)
+    enter_string(str(st.month))
+    #enter start day
+    ag.click(666, 345)
+    enter_string(str(st.day))
 
-	#enter end year
-	ag.moveTo(770, 295)
-	ag.click()
-	enter_string(str(et.year))
-	#enter end month
-	ag.moveTo(803, 295)
-	ag.click()
-	enter_string(str(et.month))
-	#enter end day
-	ag.moveTo(825, 295)
-	ag.click()
-	enter_string(str(et.day))
+    #enter end year
+    ag.click(810, 345)
+    enter_string(str(et.year))
+    #enter end month
+    ag.click(840, 345)
+    enter_string(str(et.month))
+    #enter end day
+    ag.click(860, 345)
+    enter_string(str(et.day))
 
-	#SELECT period
-	ag.moveTo(647, 325)
-	ag.click()
-	ag.moveTo(751, 328)
-	ag.click()
-	#1d period
-	if period == '1d':
-		ag.moveTo(776, 406)
-		ag.click()
-	elif period == '10s':
-		ag.moveTo(776, 369)
-		ag.click()
+    #SELECT period
+    ag.click(683, 375)
+    ag.click(872, 376)
+    #1d period
+    if period == '1d':
+        ag.click(800, 455)
+    elif period == '10s':
+        ag.click(800, 418)
 
 
 def download_instrument(inst):
 	#enter instrument
-	ag.moveTo(570, 416)
-	ag.click()
-	ag.moveTo(765, 416)
-	ag.click()
+	ag.click(606, 465)
+	ag.click(808, 469)
 
 	enter_string(inst)
 
 	#start download
-	ag.moveTo(618, 490)
-	ag.click()
+	ag.click(666, 539)
 
 	#wait for finish
 	while(True):
 		ag.screenshot(my_img_100,
-                     region=(842, 444, 35, 20))
+                     region=(882, 496, 31, 15))
 		if filecmp.cmp(my_img_100, img_100):
 			break
 		else:

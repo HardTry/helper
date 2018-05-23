@@ -66,6 +66,7 @@ class DataLines:
         self.la = LinesAttr()
 
     def set_data(self, ve, max_x, min_x, cp, prdlen, h, w = 1024.0):
+        # type: (object, object, object, object, object, object, object) -> object
         if (len(max_x) > 1 and len(min_x) > 1):
             self.max_x = []
             self.max_y = []

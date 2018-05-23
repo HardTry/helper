@@ -4,7 +4,7 @@ m_data_len = 1024
 m_predict_len = 128
 
 
-class Artist9:
+class Artist:
     def __init__(self, m12, ax, name, level):
         self.m12 = m12
         self.name = name
@@ -70,10 +70,10 @@ class Artist9:
                               max(self.price[int(xlim[0]): cp])])
 
     def update_lines(self, cp, show_future):
-        self.max_x = []
-        self.max_y = []
-        self.min_x = []
-        self.min_y = []
+        del self.max_x[:]
+        del self.max_y[:]
+        del self.min_x[:]
+        del self.min_y[:]
 
         self.m12.get_max_min_line(self.max_x, self.max_y, self.min_x, self.min_y, self.level)
         self.lmax.set_data(self.max_x, self.max_y)
@@ -90,16 +90,19 @@ class Artist9:
             self.lFuture.set_data([], [])
 
         first_ext_pos = self.m12.get_first_ext_pos(self.level)
-        print self.down_int, first_ext_pos, cp
-        self.lNow.set_data([first_ext_pos, cp - 1], \
-                           [self.price[first_ext_pos], self.price[cp - 1]])
+        if first_ext_pos < cp:
+            self.lNow.set_data([first_ext_pos, cp],
+                               [self.price[first_ext_pos], self.price[cp]])
 
         ap_hi_pos = self.m12.get_ap_hi_pos(self.level)
 
-        self.predict = []
+        del self.predict[:]
         self.m12.get_predict_line(self.predict, self.level)
-        self.lp_hi.set_data(self.allx[ap_hi_pos: ap_hi_pos + m_predict_len], \
-                            self.predict)
+        if len(self.predict) == \
+                len(self.allx[ap_hi_pos: ap_hi_pos + m_predict_len]):
+                self.lp_hi.set_data(
+                    self.allx[ap_hi_pos: ap_hi_pos + m_predict_len],
+                    self.predict)
 
         x = []
         self.m12.get_approximate(x, cp, self.level)
@@ -121,7 +124,16 @@ class Artist9:
         pass
 
     def animate(self, cur_pos, show_future):
+        # update the price data
+        del self.price[:]
+        self.m12.get_hop_price(self.price, self.level)
         cp = cur_pos / self.down_int - 1
+        if cp >= len(self.price):
+            print "Error!"
+            return
+
+        self.allx = list(range(0, len(self.price) + m_predict_len))
+
         xlim = list(self.ax.get_xlim())
         ylim = list(self.ax.get_ylim())
         self.update_limite(xlim, ylim, cp, show_future)
@@ -139,6 +151,6 @@ class Artist9:
 
         self.update_lines(cp, show_future)
 
-    def clean_predict_lines(self):
-        for ppll in self.pls:
-            ppll.set_data([], [])
+    # def clean_predict_lines(self):
+    #     for line in self.pls:
+    #         line.set_data([], [])

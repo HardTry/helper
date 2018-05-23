@@ -12,7 +12,7 @@ from matplotlib import rcParams
 
 import numpy as np
 
-import animation9
+import anim_ctpmdif
 import tmath
 import trade
 
@@ -30,7 +30,8 @@ class FigureThread(threading.Thread):
         self.dcplp = dcplp
 
     def run(self):
-        ani_lines1 = animation9.SubplotAnimation9(self.m12, self.params, 0, self.dcplp, None)
+        ani_lines1 = anim_ctpmdif.SubplotAnimation(
+            self.m12, self.params, 0, self.dcplp, None)
 
         # self.ani_dash = Dashboard(self.dm)
         plt.show()
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     nr_params = NRParams()
     m12 = Math12()
     dcplp = Dcplp()
-    nr_params.min_data_size = int(1024 * 2048 * 1.02)
+    nr_params.min_data_size = int(1024 * 2048 * 1.002)
 
     m12.set_param(nr_params)
     all_len = m12.get_data_from_file(instrument, data_path, the_date, trade.get_hop(instrument))
@@ -99,12 +100,6 @@ if __name__ == "__main__":
     params.all_len = all_len
     print 'all data', all_len, 'start from', start_pos, 'to ', end_pos
 
-    for i in range(start_pos, all_len):
-        m12.do_math(i)
-        dcplp.set_register(i, m12)
-
-    params.curpos = end_pos
-
     #
     # init params of plot
     #
@@ -116,6 +111,20 @@ if __name__ == "__main__":
 
     for key, value in sorted(rc_params.iteritems()):
         rcParams[key] = value
+
+    params.curpos = start_pos
+    while params.curpos <= end_pos:
+        m12.do_math(params.curpos)
+        dcplp.set_register(params.curpos, m12)
+        params.curpos += 1
+    params.curpos -= 1
+
+    #
+    # start figure gui
+    #
+    t_figure = FigureThread(m12, params, dcplp)
+    t_figure.start()
+    time.sleep(15)
 
     #
     # Get Ctp Data Reader
@@ -141,14 +150,7 @@ if __name__ == "__main__":
     da = ctpif.DataAmount()
     params.run_status = 1
 
-    #
-    # start GUI
-    #
-    t_figure = FigureThread(m12, params, dcplp)
-    t_figure.start()
-    time.sleep(30)   # wait the figure
-
-    while params.run_status > 0 and reader_good:
+    while params.run_status != -100 and reader_good:
         ret = ctpif.cc_new_data(long(reader), watch_inst, da)
         if ret < 0:
             reader_good = False
@@ -157,18 +159,19 @@ if __name__ == "__main__":
 
         if da.has_new == 1:
             bar = g_array[da.curpos]
-            print '%d, %d | %d > %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f' % (
-                da.curpos, da.count, da.isnew, bar[0], bar[1], bar[2], bar[3],
-                bar[4], bar[5], bar[6])
+            # print '%d, %d | %d > %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f' % (
+            #     da.curpos, da.count, da.isnew, bar[0], bar[1], bar[2], bar[3],
+            #     bar[4], bar[5], bar[6])
 
             candle = CandleBar(bar[0], bar[1], bar[2], bar[3], bar[4], bar[5], bar[6])
             m12.append(candle)
 
             m12.do_math(params.curpos + 1)
-            params.curpos += 1
+            dcplp.set_register(params.curpos + 1, m12)
+            m12.do_math(params.curpos + 2)
+            dcplp.set_register(params.curpos + 1, m12)
 
-            m12.do_math(params.curpos + 1)
-            params.curpos += 1
+            params.curpos += 2
 
         time.sleep(0.01)
 
