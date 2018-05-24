@@ -104,7 +104,7 @@ class CandleData:
 
 
 def write_candle_to_mongo(datapath, datafile, instrument, period, format=1):
-    db = influxdb.InfluxDBClient("127.0.0.1", 8086, "", "", "tick")
+    db = influxdb.InfluxDBClient("127.0.0.1", 18081, "", "", "tick")
     data = []
     with open(datapath + '/' + datafile, "r") as tickcsv:
         lines = csv.reader(tickcsv)
@@ -121,12 +121,13 @@ def write_candle_to_mongo(datapath, datafile, instrument, period, format=1):
             curr_time = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.localtime(candle.fltTime))
             sql = "select count(volume) from %s where time = '%s'" % (instrument, curr_time)
             result = db.query(sql)
-            if len(result.items()) == 0:
-                data.append(candle.tojson())
-            # else:
-            #    print 'data exists ', curr_time
+            if len(result.items()) > 0:
+                # print 'data is exists: %s' % curr_time
+                continue
+            db.write_points([candle.tojson()])
+            # data.append(candle.tojson())
             i += 1
-        db.write_points(data)
+        # db.write_points(data)
         print "finished. ", i
 
 

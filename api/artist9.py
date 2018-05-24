@@ -90,7 +90,7 @@ class Artist9:
             self.lFuture.set_data([], [])
 
         first_ext_pos = self.m12.get_first_ext_pos(self.level)
-        print self.down_int, first_ext_pos, cp
+        # print self.down_int, first_ext_pos, cp
         self.lNow.set_data([first_ext_pos, cp - 1], \
                            [self.price[first_ext_pos], self.price[cp - 1]])
 

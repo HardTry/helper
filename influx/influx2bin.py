@@ -43,6 +43,7 @@ def write_data(rows, path, instrument):
                 float(data.get('volume')),
                 float(data.get('open_interest'))
             )
+            print data.get('time')
             fd.write(byte_objects)
     print 'save to file: %s' % file_path
     return day
@@ -50,21 +51,23 @@ def write_data(rows, path, instrument):
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
-        print "Usage influx2bin.py <datapath> <instrument> <start day>"
-        print "example: influx2bin.py datapath rb1710 20171107"
+        print "Usage influx2bin.py <datapath> <instrument> <start date>"
+        print "example: /data/sean/datapath rb1810 20180101"
         exit(0)
     datapath = sys.argv[1]
     instrument = sys.argv[2]
-    td = sys.argv[3]
-    start_day = td[0:4] + '-' + td[4:6] + '-' + td[6:8] + 'T00:00:00Z'
+    sdate = sys.argv[3]
+    sdate = '%s-%s-%sT00:00:00Z' % (sdate[0:4], sdate[4:6], sdate[6:])
+    # print sdate
 
     dir_path = os.path.join(datapath, instrument)
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
 
-    db = influxdb.InfluxDBClient("127.0.0.1", 8086, "", "", "tick")
+    db = influxdb.InfluxDBClient("127.0.0.1", 18081, "", "", "tick")
 
-    days_sql = "select count(volume) from %s group by time(1d)" % instrument
+    days_sql = "select count(volume) from %s where time >= '%s' group by time(1d) tz('Asia/Shanghai')" % (instrument, sdate)
+    # print days_sql
     result = db.query(days_sql)
     days = []
     for row in result[instrument]:
@@ -72,14 +75,11 @@ if __name__ == '__main__':
             days.append(row.get('time'))
     format_days = []
     for i in range(0, len(days)):
-        if days[i] < start_day:
-            continue;
-
         sql = "select * from %s where time >= '%s'" % (instrument, days[i])
         if i + 1 < len(days):
             sql = "%s and time < '%s'" % (sql, days[i+1])
-        # print sql
         result = db.query(sql)
-        fday = write_data(result[instrument], dir_path, instrument)
-        format_days.append(fday)
+        if len(result) > 0:
+            fday = write_data(result[instrument], dir_path, instrument)
+            format_days.append(fday)
     write_tdays(format_days, dir_path)
