@@ -43,7 +43,7 @@ def write_data(rows, path, instrument):
                 float(data.get('volume')),
                 float(data.get('open_interest'))
             )
-            print data.get('time')
+            # print data.get('time')
             fd.write(byte_objects)
     print 'save to file: %s' % file_path
     return day
